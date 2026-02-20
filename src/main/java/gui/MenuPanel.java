@@ -22,7 +22,7 @@ class MenuPanel extends JPanel {
 
         btnAgregar.addActionListener(e ->
                 ((MainFrame) SwingUtilities.getWindowAncestor(this))
-                        .cambiarVista(NombrePaneles.MENU));
+                        .cambiarVista(NombrePaneles.AGREGAR));
 
         btnRentar.addActionListener(e ->
                 ((MainFrame) SwingUtilities.getWindowAncestor(this))

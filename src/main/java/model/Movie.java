@@ -5,6 +5,7 @@
 package model;
 
 import java.util.Calendar;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -24,6 +25,10 @@ public class Movie extends RentItem {
 
     public void setFechaEstreno(Calendar fechaEstreno) {
         if (fechaEstreno != null) this.fechaEstreno = fechaEstreno;
+    }
+    
+    public void setImagen(ImageIcon imagen) {
+        this.imagen = imagen;
     }
 
     public String getEstado() {
