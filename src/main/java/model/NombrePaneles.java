@@ -4,5 +4,6 @@ public enum NombrePaneles {
     MENU,
     AGREGAR,
     RENTAR,
-    SUBMENU
+    SUBMENU,
+    IMPRIMIR
 }
