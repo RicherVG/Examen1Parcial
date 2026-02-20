@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package model;
+package main.java.model;
 
 import java.util.Calendar;
 import javax.swing.ImageIcon;
@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
  * @author riche
  */
 public class Movie extends RentItem {
-    private Calendar fechaEstreno; 
+    protected Calendar fechaEstreno; 
 
     public Movie(String codigo, String nombre, double precioBase) {
         super(codigo, nombre, precioBase);
