@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package examenprimerparcial1;
+package model;
 
 /**
  *
@@ -11,11 +11,11 @@ package examenprimerparcial1;
 import javax.swing.ImageIcon;
 
 public  abstract class RentItem {
-    private final String codigo;
-    private final String nombre;
-    private final double precioBase;
-    private int cantidadCopias;
-    private ImageIcon imagen;
+    protected final String codigo;
+    protected final String nombre;
+    protected final double precioBase;
+    protected int cantidadCopias;
+    protected  ImageIcon imagen;
     
     public RentItem(String codigo,String nombre,double precioBase){
         this.codigo=codigo;
