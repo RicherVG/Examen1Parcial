@@ -2,10 +2,12 @@ package gui;
 
 import model.NombrePaneles;
 import model.RentItem;
+import model.Movie;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class RentarPanel extends JPanel {
     private MainFrame mainFrame;
@@ -187,6 +189,10 @@ public class RentarPanel extends JPanel {
             return;
         }
 
+        // Limpiar el campo de días cuando se busca otro item
+        txtDias.setText("");
+        lblMontoTotal.setText("L.0.00");
+
         // Mostrar información del item
         mostrarInformacionItem();
     }
@@ -263,8 +269,58 @@ public class RentarPanel extends JPanel {
         // Habilitar campo de días y botones
         txtDias.setEnabled(true);
         btnCalcular.setEnabled(true);
-        btnRentar.setEnabled(true);
+        
+        // Verificar si es una película que aún no se ha estrenado
+        boolean puedeRentar = itemSeleccionado.getCantidadCopias() > 0;
+        if (itemSeleccionado instanceof Movie) {
+            Movie movie = (Movie) itemSeleccionado;
+            boolean yaEstrenada = peliculaYaEstrenada(movie);
+            puedeRentar = puedeRentar && yaEstrenada;
+            
+            // Mostrar mensaje si la película aún no se ha estrenado
+            if (!yaEstrenada) {
+                JOptionPane.showMessageDialog(this, 
+                        "Esta película aún no se ha estrenado, muy pronto estaremos rentándola",
+                        "Película No Disponible", 
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+        
+        btnRentar.setEnabled(puedeRentar);
         lblMontoTotal.setText("L.0.00");
+    }
+    
+    /**
+     * Verifica si una película ya se ha estrenado (fecha de estreno <= fecha actual)
+     */
+    private boolean peliculaYaEstrenada(Movie movie) {
+        Calendar fechaEstreno = movie.getFechaEstreno();
+        Calendar hoy = Calendar.getInstance();
+        
+        // Comparar fechas (solo año, mes y día, sin hora)
+        int anioEstreno = fechaEstreno.get(Calendar.YEAR);
+        int mesEstreno = fechaEstreno.get(Calendar.MONTH);
+        int diaEstreno = fechaEstreno.get(Calendar.DAY_OF_MONTH);
+        
+        int anioHoy = hoy.get(Calendar.YEAR);
+        int mesHoy = hoy.get(Calendar.MONTH);
+        int diaHoy = hoy.get(Calendar.DAY_OF_MONTH);
+        
+        // Si el año de estreno es menor, ya se estrenó
+        if (anioEstreno < anioHoy) {
+            return true;
+        }
+        // Si el año es igual pero el mes es menor, ya se estrenó
+        if (anioEstreno == anioHoy && mesEstreno < mesHoy) {
+            return true;
+        }
+        // Si el año y mes son iguales pero el día es menor o igual, ya se estrenó
+        if (anioEstreno == anioHoy && mesEstreno == mesHoy && diaEstreno <= diaHoy) {
+            return true;
+        }
+        
+        // Si llegamos aquí, la fecha de estreno es futura
+        return false;
     }
     
     private void mostrarSinImagen() {
@@ -337,6 +393,18 @@ public class RentarPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Por favor busque un item primero", 
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        // Verificar si es una película que aún no se ha estrenado
+        if (itemSeleccionado instanceof Movie) {
+            Movie movie = (Movie) itemSeleccionado;
+            if (!peliculaYaEstrenada(movie)) {
+                JOptionPane.showMessageDialog(this, 
+                        "Esta película aún no se ha estrenado, muy pronto estaremos rentándola",
+                        "Película No Disponible", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
         }
 
         // Verificar que haya copias disponibles
