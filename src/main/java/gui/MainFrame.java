@@ -15,7 +15,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("Sistema de Renta");
-        setSize(800, 600);
+        setSize(1000, 800);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

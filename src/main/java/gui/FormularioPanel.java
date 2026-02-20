@@ -1,5 +1,6 @@
 package gui;
 
+import model.Game;
 import model.Movie;
 import model.NombrePaneles;
 import model.RentItem;
@@ -18,23 +19,43 @@ public class FormularioPanel extends JPanel {
     private JTextField txtCodigo;
     private JTextField txtNombre;
     private JTextField txtPrecio;
+    private JTextField txtCantidadCopias;
     private JDateChooser dateChooser;
+    private JLabel lblFecha;
+    private JLabel lblPrecio;
+    private JComboBox<String> cmbTipo;
     private JLabel lblImagen;
     private JLabel lblPreviewImagen;
     private JButton btnSeleccionarImagen;
     private JButton btnGuardar;
     private JButton btnCancelar;
     private String rutaImagen;
+    
+    // Campos para Game - Especificaciones
+    private JPanel panelEspecificaciones;
+    private JTextField txtEspecificacion;
+    private JButton btnAgregarEspecificacion;
+    private JList<String> listaEspecificaciones;
+    private DefaultListModel<String> modeloEspecificaciones;
+    private JScrollPane scrollEspecificaciones;
 
     public FormularioPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel superior con título
+        // Panel superior con título y tipo
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel lblTitulo = new JLabel("Agregar Movie");
+        JLabel lblTitulo = new JLabel("Agregar Item");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 18));
         panelSuperior.add(lblTitulo);
+        
+        JLabel lblTipo = new JLabel("Tipo:");
+        cmbTipo = new JComboBox<>(new String[]{"Movie", "Game"});
+        cmbTipo.setPreferredSize(new Dimension(120, 30));
+        cmbTipo.addActionListener(e -> actualizarCamposSegunTipo());
+        panelSuperior.add(Box.createHorizontalStrut(20));
+        panelSuperior.add(lblTipo);
+        panelSuperior.add(cmbTipo);
 
         // Panel central con formulario
         JPanel panelFormulario = new JPanel(new GridBagLayout());
@@ -66,12 +87,13 @@ public class FormularioPanel extends JPanel {
         txtNombre.setPreferredSize(new Dimension(250, 30));
         panelFormulario.add(txtNombre, gbc);
 
-        // Precio
+        // Precio (solo para Movie)
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        panelFormulario.add(new JLabel("Precio por día:"), gbc);
+        lblPrecio = new JLabel("Precio por día:");
+        panelFormulario.add(lblPrecio, gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
@@ -79,12 +101,27 @@ public class FormularioPanel extends JPanel {
         txtPrecio.setPreferredSize(new Dimension(250, 30));
         panelFormulario.add(txtPrecio, gbc);
 
-        // Fecha de Estreno
+        // Cantidad de Copias
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
-        panelFormulario.add(new JLabel("Fecha de Estreno:"), gbc);
+        panelFormulario.add(new JLabel("Cantidad de Copias:"), gbc);
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        txtCantidadCopias = new JTextField(20);
+        txtCantidadCopias.setPreferredSize(new Dimension(250, 30));
+        txtCantidadCopias.setText("0");
+        panelFormulario.add(txtCantidadCopias, gbc);
+
+        // Fecha (Estreno para Movie, Publicación para Game)
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        lblFecha = new JLabel("Fecha de Estreno:");
+        panelFormulario.add(lblFecha, gbc);
         gbc.gridx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
@@ -94,9 +131,45 @@ public class FormularioPanel extends JPanel {
         dateChooser.setPreferredSize(new Dimension(250, 30));
         panelFormulario.add(dateChooser, gbc);
 
+        // Especificaciones (solo para Game)
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0;
+        gbc.gridwidth = 1;
+        JLabel lblEspecificaciones = new JLabel("Especificaciones:");
+        panelFormulario.add(lblEspecificaciones, gbc);
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.3;
+        panelEspecificaciones = new JPanel(new BorderLayout(5, 5));
+        panelEspecificaciones.setBorder(BorderFactory.createTitledBorder("Especificaciones Técnicas"));
+        
+        // Panel para agregar especificaciones
+        JPanel panelAgregar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        txtEspecificacion = new JTextField(20);
+        txtEspecificacion.setPreferredSize(new Dimension(200, 25));
+        btnAgregarEspecificacion = new JButton("Agregar");
+        btnAgregarEspecificacion.addActionListener(e -> agregarEspecificacion());
+        panelAgregar.add(txtEspecificacion);
+        panelAgregar.add(btnAgregarEspecificacion);
+        
+        // Lista de especificaciones
+        modeloEspecificaciones = new DefaultListModel<>();
+        listaEspecificaciones = new JList<>(modeloEspecificaciones);
+        scrollEspecificaciones = new JScrollPane(listaEspecificaciones);
+        scrollEspecificaciones.setPreferredSize(new Dimension(250, 100));
+        scrollEspecificaciones.setMinimumSize(new Dimension(200, 80));
+        
+        panelEspecificaciones.add(panelAgregar, BorderLayout.NORTH);
+        panelEspecificaciones.add(scrollEspecificaciones, BorderLayout.CENTER);
+        panelEspecificaciones.setVisible(false);
+        panelFormulario.add(panelEspecificaciones, gbc);
+
         // Imagen
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
         panelFormulario.add(new JLabel("Imagen:"), gbc);
@@ -114,7 +187,7 @@ public class FormularioPanel extends JPanel {
 
         // Preview de Imagen
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 7;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weightx = 0;
         panelFormulario.add(new JLabel("Preview:"), gbc);
@@ -249,14 +322,34 @@ public class FormularioPanel extends JPanel {
             return;
         }
 
-        double precio;
+        String tipo = (String) cmbTipo.getSelectedItem();
+        double precio = 0;
+        
+        // Validar precio solo para Movie
+        if (tipo.equals("Movie")) {
+            try {
+                precio = Double.parseDouble(txtPrecio.getText().trim());
+                if (precio <= 0) {
+                    throw new NumberFormatException();
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Por favor ingrese un precio válido mayor a 0", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+
+        // Validar cantidad de copias
+        int cantidadCopias;
         try {
-            precio = Double.parseDouble(txtPrecio.getText().trim());
-            if (precio <= 0) {
-                throw new NumberFormatException();
+            cantidadCopias = Integer.parseInt(txtCantidadCopias.getText().trim());
+            if (cantidadCopias < 0) {
+                JOptionPane.showMessageDialog(this, "La cantidad de copias debe ser mayor o igual a 0", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese un precio válido mayor a 0", 
+            JOptionPane.showMessageDialog(this, "Por favor ingrese una cantidad de copias válida", 
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -277,32 +370,67 @@ public class FormularioPanel extends JPanel {
 
         String nombre = txtNombre.getText().trim();
 
-        // Obtener fecha de estreno
+        // Obtener fecha
         Date fechaSeleccionada = dateChooser.getDate();
         if (fechaSeleccionada == null) {
-            JOptionPane.showMessageDialog(this, "Por favor seleccione una fecha de estreno", 
+            String tipoSeleccionado = (String) cmbTipo.getSelectedItem();
+            String mensaje = tipoSeleccionado.equals("Movie") ? "Por favor seleccione una fecha de estreno" : "Por favor seleccione una fecha de publicación";
+            JOptionPane.showMessageDialog(this, mensaje, 
                     "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Calendar fechaEstreno = Calendar.getInstance();
-        fechaEstreno.setTime(fechaSeleccionada);
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTime(fechaSeleccionada);
 
-        // Crear el Movie
-        Movie nuevoMovie = new Movie(codigo, nombre, precio);
-        nuevoMovie.setFechaEstreno(fechaEstreno);
+        String tipoSeleccionado = (String) cmbTipo.getSelectedItem();
+        RentItem nuevoItem;
+
+        // Crear Movie o Game según el tipo
+        if (tipoSeleccionado.equals("Movie")) {
+            Movie nuevoMovie = new Movie(codigo, nombre, precio);
+            nuevoMovie.setFechaEstreno(fecha);
+            nuevoMovie.setCantidadCopias(cantidadCopias);
+            nuevoItem = nuevoMovie;
+        } else {
+            Game nuevoGame = new Game(codigo, nombre);
+            nuevoGame.setFechaPublicacion(fecha);
+            nuevoGame.setCantidadCopias(cantidadCopias);
+            
+            // Agregar especificaciones
+            for (int i = 0; i < modeloEspecificaciones.getSize(); i++) {
+                nuevoGame.agregarEspecificacion(modeloEspecificaciones.getElementAt(i));
+            }
+            
+            nuevoItem = nuevoGame;
+        }
 
         // Si hay imagen seleccionada, establecerla
         if (rutaImagen != null && !rutaImagen.isEmpty()) {
             try {
-                ImageIcon imagen = new ImageIcon(rutaImagen);
-                nuevoMovie.setImagen(imagen);
+                File archivoImagen = new File(rutaImagen);
+                if (archivoImagen.exists() && archivoImagen.isFile()) {
+                    ImageIcon imagen = new ImageIcon(rutaImagen);
+                    // Verificar que la imagen se cargó correctamente
+                    if (imagen.getImageLoadStatus() == java.awt.MediaTracker.COMPLETE) {
+                        if (nuevoItem instanceof Movie) {
+                            ((Movie) nuevoItem).setImagen(imagen);
+                        } else if (nuevoItem instanceof Game) {
+                            ((Game) nuevoItem).setImagen(imagen);
+                        }
+                    } else {
+                        System.err.println("La imagen no se pudo cargar completamente: " + rutaImagen);
+                    }
+                } else {
+                    System.err.println("El archivo de imagen no existe: " + rutaImagen);
+                }
             } catch (Exception e) {
                 // Si hay error al cargar la imagen, continuar sin ella
                 System.err.println("Error al cargar la imagen: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        items.add(nuevoMovie);
+        items.add(nuevoItem);
         JOptionPane.showMessageDialog(this, "Item agregado correctamente", 
                 "Éxito", JOptionPane.INFORMATION_MESSAGE);
         
@@ -315,11 +443,42 @@ public class FormularioPanel extends JPanel {
         frame.cambiarVista(NombrePaneles.MENU);
     }
 
+    private void agregarEspecificacion() {
+        String especificacion = txtEspecificacion.getText().trim();
+        if (!especificacion.isEmpty()) {
+            modeloEspecificaciones.addElement(especificacion);
+            txtEspecificacion.setText("");
+        }
+    }
+
+    private void actualizarCamposSegunTipo() {
+        String tipo = (String) cmbTipo.getSelectedItem();
+        if (tipo.equals("Movie")) {
+            lblPrecio.setText("Precio por día:");
+            lblPrecio.setVisible(true);
+            txtPrecio.setVisible(true);
+            txtPrecio.setEnabled(true);
+            lblFecha.setText("Fecha de Estreno:");
+            panelEspecificaciones.setVisible(false);
+        } else {
+            lblPrecio.setVisible(false);
+            txtPrecio.setVisible(false);
+            txtPrecio.setText("");
+            lblFecha.setText("Fecha de Publicación:");
+            panelEspecificaciones.setVisible(true);
+        }
+    }
+
     private void limpiarFormulario() {
         txtCodigo.setText("");
         txtNombre.setText("");
         txtPrecio.setText("");
+        txtCantidadCopias.setText("0");
         dateChooser.setDate(new Date());
+        cmbTipo.setSelectedIndex(0);
+        modeloEspecificaciones.clear();
+        txtEspecificacion.setText("");
+        actualizarCamposSegunTipo();
         lblImagen.setText("No seleccionada");
         lblImagen.setForeground(Color.GRAY);
         lblPreviewImagen.setIcon(null);

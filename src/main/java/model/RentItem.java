@@ -39,6 +39,12 @@ public  abstract class RentItem {
         return cantidadCopias;
     }
     
+    public void setCantidadCopias(int cantidadCopias){
+        if (cantidadCopias >= 0) {
+            this.cantidadCopias = cantidadCopias;
+        }
+    }
+    
     public ImageIcon getImagen(){
         return imagen;
     }

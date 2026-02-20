@@ -7,6 +7,7 @@ package model;
 import java.util.ArrayList;
 import java.util.Calendar;
 import javax.swing.JOptionPane;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -33,6 +34,14 @@ public class Game extends RentItem {
         c.set(Calendar.MONTH, Math.max(0, Math.min(11, mes - 1)));
         c.set(Calendar.DAY_OF_MONTH, dia);
         this.fechaPublicacion = c;
+    }
+    
+    public void setFechaPublicacion(Calendar fecha) {
+        if (fecha != null) this.fechaPublicacion = fecha;
+    }
+    
+    public void setImagen(ImageIcon imagen) {
+        this.imagen = imagen;
     }
 
     public void agregarEspecificacion(String esp) {
