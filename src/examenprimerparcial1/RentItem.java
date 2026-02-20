@@ -42,7 +42,7 @@ public  abstract class RentItem {
     }
     @Override
     public String toString() {
-        return "Codigo=" + codigo + ", Nombre=" + nombre + ", PrecioBase=" + precioBase + ", Copias=" + cantidadCopias;
+        return "Codigo=" + codigo + ", Nombre=" + nombre + ", Precio Base=" + precioBase + ", cantidad de copias=" + cantidadCopias;
     }
 
     public abstract double pagoRenta(int dias);
