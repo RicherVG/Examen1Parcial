@@ -409,16 +409,35 @@ public class FormularioPanel extends JPanel {
             try {
                 File archivoImagen = new File(rutaImagen);
                 if (archivoImagen.exists() && archivoImagen.isFile()) {
-                    ImageIcon imagen = new ImageIcon(rutaImagen);
-                    // Verificar que la imagen se cargó correctamente
-                    if (imagen.getImageLoadStatus() == java.awt.MediaTracker.COMPLETE) {
+                    // Intentar cargar con ImageIO primero (mejor para formatos estándar)
+                    ImageIcon imagen = null;
+                    try {
+                        BufferedImage bufferedImg = ImageIO.read(archivoImagen);
+                        if (bufferedImg != null) {
+                            imagen = new ImageIcon(bufferedImg);
+                        }
+                    } catch (Exception e) {
+                        // Si ImageIO falla, intentar con ImageIcon directamente (para GIFs animados)
+                        System.out.println("ImageIO no pudo cargar, intentando con ImageIcon directo: " + e.getMessage());
+                    }
+                    
+                    // Si ImageIO falló, usar ImageIcon directamente
+                    if (imagen == null) {
+                        imagen = new ImageIcon(rutaImagen);
+                    }
+                    
+                    // Verificar que la imagen sea válida
+                    if (imagen != null && imagen.getImage() != null) {
+                        // Para GIFs animados, el ImageLoadStatus puede no ser COMPLETE inmediatamente
+                        // pero la imagen puede estar disponible
                         if (nuevoItem instanceof Movie) {
                             ((Movie) nuevoItem).setImagen(imagen);
                         } else if (nuevoItem instanceof Game) {
                             ((Game) nuevoItem).setImagen(imagen);
                         }
+                        System.out.println("Imagen cargada exitosamente: " + rutaImagen);
                     } else {
-                        System.err.println("La imagen no se pudo cargar completamente: " + rutaImagen);
+                        System.err.println("La imagen no se pudo cargar: " + rutaImagen);
                     }
                 } else {
                     System.err.println("El archivo de imagen no existe: " + rutaImagen);

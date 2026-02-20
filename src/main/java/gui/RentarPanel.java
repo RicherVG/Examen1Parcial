@@ -213,21 +213,48 @@ public class RentarPanel extends JPanel {
 
         // Mostrar imagen
         ImageIcon imagen = itemSeleccionado.getImagen();
-        if (imagen != null && imagen.getImageLoadStatus() == java.awt.MediaTracker.COMPLETE) {
+        if (imagen != null) {
             try {
                 // Escalar imagen para el preview
                 Image img = imagen.getImage();
                 if (img != null) {
-                    Image imgEscalada = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                    ImageIcon iconoEscalado = new ImageIcon(imgEscalada);
-                    lblImagen.setIcon(iconoEscalado);
-                    lblImagen.setText("");
+                    // Para GIFs animados, no escalar para mantener la animación
+                    // Solo escalar si es necesario
+                    int ancho = imagen.getIconWidth();
+                    int alto = imagen.getIconHeight();
+                    
+                    if (ancho > 0 && alto > 0) {
+                        // Si la imagen es muy grande, escalarla
+                        if (ancho > 200 || alto > 200) {
+                            double escala = Math.min(200.0 / ancho, 200.0 / alto);
+                            int nuevoAncho = (int) (ancho * escala);
+                            int nuevoAlto = (int) (alto * escala);
+                            Image imgEscalada = img.getScaledInstance(nuevoAncho, nuevoAlto, Image.SCALE_SMOOTH);
+                            ImageIcon iconoEscalado = new ImageIcon(imgEscalada);
+                            lblImagen.setIcon(iconoEscalado);
+                        } else {
+                            // Usar la imagen original si es pequeña
+                            lblImagen.setIcon(imagen);
+                        }
+                        lblImagen.setText("");
+                    } else {
+                        // Si no tiene dimensiones válidas, intentar usar directamente
+                        lblImagen.setIcon(imagen);
+                        lblImagen.setText("");
+                    }
                 } else {
                     mostrarSinImagen();
                 }
             } catch (Exception e) {
                 System.err.println("Error al mostrar imagen: " + e.getMessage());
-                mostrarSinImagen();
+                e.printStackTrace();
+                // Intentar mostrar la imagen original sin escalar
+                try {
+                    lblImagen.setIcon(imagen);
+                    lblImagen.setText("");
+                } catch (Exception e2) {
+                    mostrarSinImagen();
+                }
             }
         } else {
             mostrarSinImagen();

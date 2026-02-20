@@ -13,7 +13,7 @@ import javax.swing.ImageIcon;
  *
  * @author riche
  */
-public class Game extends RentItem {
+public class Game extends RentItem implements MenuActions {
      protected Calendar fechaPublicacion;                
     protected final ArrayList<String> especificaciones;  
 
@@ -48,6 +48,10 @@ public class Game extends RentItem {
         if (esp != null && !esp.trim().isEmpty()) {
             especificaciones.add(esp.trim());
         }
+    }
+    
+    public ArrayList<String> getEspecificaciones() {
+        return especificaciones;
     }
 
     
