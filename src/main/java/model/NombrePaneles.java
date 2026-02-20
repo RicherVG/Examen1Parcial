@@ -3,5 +3,6 @@ package model;
 public enum NombrePaneles {
     MENU,
     AGREGAR,
-    RENTAR
+    RENTAR,
+    IMPRIMIR
 }
