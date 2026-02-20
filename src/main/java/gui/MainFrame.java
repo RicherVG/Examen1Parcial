@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
 
         mainPanel.add(new MenuPanel(), NombrePaneles.MENU.name());
         mainPanel.add(new AgregarPanel(), NombrePaneles.AGREGAR.name());
-//        mainPanel.add(new RentarPanel(), "RENTAR");
+        mainPanel.add(new RentarPanel(this), NombrePaneles.RENTAR.name());
 //        mainPanel.add(new ImprimirPanel(), "IMPRIMIR");
 
 

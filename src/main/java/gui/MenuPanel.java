@@ -26,7 +26,7 @@ class MenuPanel extends JPanel {
 
         btnRentar.addActionListener(e ->
                 ((MainFrame) SwingUtilities.getWindowAncestor(this))
-                        .cambiarVista(NombrePaneles.MENU));
+                        .cambiarVista(NombrePaneles.RENTAR));
 
         btnImprimir.addActionListener(e ->
                 ((MainFrame) SwingUtilities.getWindowAncestor(this))

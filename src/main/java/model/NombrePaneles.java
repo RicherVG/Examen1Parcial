@@ -2,5 +2,6 @@ package model;
 
 public enum NombrePaneles {
     MENU,
-    AGREGAR
+    AGREGAR,
+    RENTAR
 }
