@@ -300,21 +300,18 @@ public class FormularioPanel extends JPanel {
             return;
         }
 
-        // Validar que el código sea numérico y mayor a 0
-        String codigoStr = txtCodigo.getText().trim();
-        int codigoNum;
-        try {
-            codigoNum = Integer.parseInt(codigoStr);
-            if (codigoNum <= 0) {
-                JOptionPane.showMessageDialog(this, "El código debe ser un número mayor a 0", 
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El código debe ser un número válido mayor a 0", 
-                    "Error", JOptionPane.ERROR_MESSAGE);
+         String codigo = txtCodigo.getText().trim();
+
+        if (!codigo.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "El código debe contener solo números", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (codigo.replaceFirst("^0+(?!$)", "").equals("0")) {
+            JOptionPane.showMessageDialog(this, "El código debe ser mayor a 0", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
 
         if (txtNombre.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor ingrese un nombre", 
@@ -357,7 +354,6 @@ public class FormularioPanel extends JPanel {
         MainFrame frame = (MainFrame) SwingUtilities.getWindowAncestor(this);
         ArrayList<RentItem> items = frame.getItems();
 
-        String codigo = String.valueOf(codigoNum);
 
         // Validar código único
         for (RentItem item : items) {
